@@ -39,7 +39,7 @@ module EpubBook
       @body_css = '.articlebody'
       @item_attr = "href"
       yield self if block_given?
-      @book_path = File.join((@path || File.dirname(__FILE__)), @folder_name)
+      @book_path = File.join((@path || `pwd`), @folder_name)
     end
 
 
