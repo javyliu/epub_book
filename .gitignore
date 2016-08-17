@@ -10,3 +10,4 @@
 *.swp
 default_setting.yml
 .ruby-*
+*.gem
