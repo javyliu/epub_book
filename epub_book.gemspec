@@ -1,11 +1,11 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'create_epub/version'
+require 'epub_book/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "create_epub"
-  spec.version       = CreateEpub::VERSION
+  spec.name          = "epub_book"
+  spec.version       = EpubBook::VERSION
   spec.authors       = ["qmliu"]
   spec.email         = ["javy_liu@163.com"]
 

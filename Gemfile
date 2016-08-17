@@ -1,4 +1,4 @@
 source 'https://ruby.taobao.org'
 
-# Specify your gem's dependencies in create_epub.gemspec
+# Specify your gem's dependencies in epub_book.gemspec
 gemspec

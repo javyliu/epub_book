@@ -1,13 +1,13 @@
-# CreateEpub
+# EpubBook
 
-CreateEpub is a epub generator which wrap EeePub, handle internal book by nokkogiri, you can create epub book from internal book in shell and send the generated epub book to your email.
+EpubBook is a epub generator which wrap EeePub, handle internal book by nokkogiri, you can create epub book from internal book in shell and send the generated epub book to your email.
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'create_epub'
+gem 'epub_book'
 ```
 
 And then execute:
@@ -16,14 +16,14 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install create_epub
+    $ gem install epub_book
 
 ## Usage
 
 Setting
 ```ruby 
   #smtp setting
-  CreateEpub.configure do |config|
+  EpubBook.configure do |config|
     config.mail_address = 'smtp.example.com'
     config.mail_user_name = 'ex@example.com'
     config.mail_password = 'password'
@@ -57,14 +57,14 @@ Or use a ./default_setting.yml file have following content
 ```
 Create book
 ```ruby 
-  CreateEpub.create_book(book_url,bookname) do |book|
+  EpubBook.create_book(book_url,bookname) do |book|
     book.cover_css = '.pic_txt_list .pic img'
     book.description_css = '.box p.description'
     book.title_css = '.pic_txt_list h3 span'
     book.index_item_css = 'ul.list li.c3 a'
     book.body_css = '.wrapper #content'
     book.creator = 'javy_liu'
-    book.path  = '/home/oswap/ruby_test/create_epub/'
+    book.path  = '/home/oswap/ruby_test/epub_book/'
     book.mail_to = ''
   end
 ```
@@ -95,7 +95,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/create_epub. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/epub_book. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 
 ## License

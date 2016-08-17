@@ -1,13 +1,13 @@
-require "create_epub/version"
-require 'create_epub/epub_book'
+require "epub_book/version"
+require 'epub_book/book'
 
-module CreateEpub
+module EpubBook
   # Your code goes here...
-  autoload :EpubBook, "create_epub/epub_book"
-  autoload :Mailer, "create_epub/mailer"
+  autoload :Book, "epub_book/book"
+  autoload :Mailer, "epub_book/mailer"
 
   def self.create_book(url,bookname=nil,&block)
-    epub_book = EpubBook.new(url,&block)
+    epub_book = Book.new(url,&block)
     #do |book|
     #  book.limit = 5
     #  book.cover_css = '.pic_txt_list .pic img'
@@ -16,7 +16,7 @@ module CreateEpub
     #  book.index_item_css = 'ul.list li.c3 a'
     #  book.body_css = '.wrapper #content'
     #  book.creator = 'javy_liu'
-    #  book.path  = '/home/oswap/ruby_test/create_epub/'
+    #  book.path  = '/home/oswap/ruby_test/epub_book/'
     #  book.user_agent = ''
     #  book.referer = ''
     #  book.mail_to = 'javy_liu@163.com'

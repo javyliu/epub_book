@@ -1,14 +1,14 @@
 require 'mail'
 
-module CreateEpub
+module EpubBook
   class Mailer
     extend Forwardable
     ::Mail.defaults do
       delivery_method :smtp, {
-        :address => CreateEpub.config.mail_address,
-        :port => CreateEpub.config.mail_port,
-        :user_name => CreateEpub.config.mail_user_name,
-        :password => CreateEpub.config.mail_password,
+        :address => EpubBook.config.mail_address,
+        :port => EpubBook.config.mail_port,
+        :user_name => EpubBook.config.mail_user_name,
+        :password => EpubBook.config.mail_password,
         :authentication => :plain,
         :enable_starttls_auto => true
       }
@@ -20,9 +20,9 @@ module CreateEpub
 
     def initialize
       @mailer = Mail.new do
-        from    CreateEpub.config.mail_from
-        subject CreateEpub.config.mail_subject
-        body    CreateEpub.config.mail_body
+        from    EpubBook.config.mail_from
+        subject EpubBook.config.mail_subject
+        body    EpubBook.config.mail_body
         #add_file  File.join(File.dirname(__FILE__),'bbsl.epub')
       end
     end

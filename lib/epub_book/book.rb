@@ -17,8 +17,8 @@ require 'yaml'
 #referer 访问原地址
 #creator 责任人
 
-module CreateEpub
-  class EpubBook
+module EpubBook
+  class Book
     UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.116 Safari/537.36"
     Referer = "http://www.baidu.com/"
     attr_accessor :title_css, :index_item_css, :body_css, :limit, :item_attr, :page_css, :page_attr,:cover
