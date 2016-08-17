@@ -30,7 +30,32 @@ Setting
     config.mail_from = 'yourmail@example.com'
   end
 ```
-create book
+Or use a ./default_setting.yml file have following content
+
+```ruby 
+  smtp_config:
+    mail_from: smpt_from@example.com
+    mail_subject: mail subject 
+    mail_body: 'your content '
+    mail_address: smtp.example.com
+    mail_port: 25
+    mail_user_name: smpt_mail@example.com
+    mail_password: smpt_pwd
+
+  book:
+    limit: 10
+    cover_css: '.pic_txt_list .pic img'
+    description_css: '.box p.description'
+    title_css: '.pic_txt_list h3 span'
+    index_item_css: 'ul.list li.c3 a'
+    body_css: '.wrapper #content'
+    creator: 'user name'
+    path: '/'
+    mail_to: 'yourmail@example.com'
+  book_url: http://www.quanben5.com/n/bubushenglian/xiaoshuo.html
+  bookname: bbsl
+```
+Create book
 ```ruby 
   CreateEpub.create_book(book_url,bookname) do |book|
     book.cover_css = '.pic_txt_list .pic img'
