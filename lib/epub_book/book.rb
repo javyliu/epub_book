@@ -31,7 +31,7 @@ module EpubBook
       @index_url = index_url
       @user_agent = UserAgent
       @referer = Referer
-      @folder_name =  Base64.urlsafe_encode64(index_url)[-10..-3]
+      @folder_name = Base64.urlsafe_encode64(Array(index_url).pack('P'))
       @creator = 'javy_liu'
       @title_css = '.wrapper h1.title1'
       @index_item_css = 'ul.list3>li>a'
