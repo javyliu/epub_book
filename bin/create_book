@@ -1,0 +1,24 @@
+#!/usr/bin/env ruby
+
+require "bundler/setup"
+require "create_epub"
+require 'yaml'
+
+# use like
+# bin/create_book http://www.quanben5.com/n/jinyiyexing/xiaoshuo.html bookname
+url,bookname = ARGV
+
+default_config = YAML.load(File.open('./default_setting.yml'))
+#smtp setting
+CreateEpub.configure do |config|
+  default_config['config'].each_pair do |key,value|
+    config.send("#{key}=",value)
+  end
+end
+
+CreateEpub.create_book(url || default_config['book_url'],bookname || default_config['bookname']) do |book|
+  default_config['book'].each_pair do |key,value|
+    book.send("#{key}=",value)
+  end
+end
+
