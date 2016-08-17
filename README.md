@@ -87,6 +87,10 @@ Create book
     book.path            #epub book save path
     book.mail_to         #if your want send by email when epub created, set this to your email
 ```
+## Perform `create_book` in your terminal
+```bash
+  create_book
+```
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
