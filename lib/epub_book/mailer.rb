@@ -1,22 +1,8 @@
-require 'mail'
-
 module EpubBook
   class Mailer
     extend Forwardable
-    ::Mail.defaults do
-      delivery_method :smtp, {
-        :address => EpubBook.config.mail_address,
-        :port => EpubBook.config.mail_port,
-        :user_name => EpubBook.config.mail_user_name,
-        :password => EpubBook.config.mail_password,
-        :authentication => :plain,
-        :enable_starttls_auto => true
-      }
-    end
 
     def_delegators :@mailer, :from,:from=,:to,:to=,:subject,:subject=,:body,:body=,:add_file
-
-
 
     def initialize
       @mailer = Mail.new do

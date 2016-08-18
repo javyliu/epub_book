@@ -6,19 +6,12 @@ require 'yaml'
 
 # use like
 # bin/create_book http://www.quanben5.com/n/jinyiyexing/xiaoshuo.html bookname
-url,bookname = ARGV
+url,bookname,des_url = ARGV
 
-default_config = YAML.load(File.open('./default_setting.yml'))
 #smtp setting
 EpubBook.configure do |config|
-  default_config['smtp_config'].each_pair do |key,value|
-    config.send("#{key}=",value)
-  end
+  config.setting_file = './default_setting.yml'
 end
 
-EpubBook.create_book(url || default_config['book_url'],bookname || default_config['bookname']) do |book|
-  default_config['book'].each_pair do |key,value|
-    book.send("#{key}=",value)
-  end
-end
+EpubBook.create_book(url,bookname,des_url)
 

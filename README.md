@@ -19,11 +19,27 @@ Or install it yourself as:
     $ gem install epub_book
 
 ## Usage
+### create book
+```ruby
+  EpubBook.create_book(book_url,bookname, des_url) do |book|
+    book.cover_css = '.pic_txt_list .pic img'
+    book.description_css = '.box p.description'
+    book.title_css = '.pic_txt_list h3 span'
+    book.index_item_css = 'ul.list li.c3 a'
+    book.body_css = '.wrapper #content'
+    book.creator = 'javy_liu'
+    book.path  = '/tmp'
+  end
+``` 
 
-Setting
+
+###use Setting
 ```ruby 
-  #smtp setting
+  #default setting, this setting is prior the default_setting.yml
   EpubBook.configure do |config|
+    #if not set,it will use `pwd`/default_setting.yml
+    config.setting_file = "./default_setting.yml"
+    #you can set following setting in default_setting.yml
     config.mail_address = 'smtp.example.com'
     config.mail_user_name = 'ex@example.com'
     config.mail_password = 'password'
@@ -42,6 +58,7 @@ Or use a ./default_setting.yml file have following content
     mail_user_name: smpt_mail@example.com
     mail_password: smpt_pwd
 
+  #default book setting
   book:
     limit: 10
     cover_css: '.pic_txt_list .pic img'
@@ -52,33 +69,33 @@ Or use a ./default_setting.yml file have following content
     creator: 'user name'
     path: '/'
     mail_to: 'yourmail@example.com'
-  book_url: http://www.quanben5.com/n/bubushenglian/xiaoshuo.html
-  bookname: bbsl
+
+  #special host book setting(the key is book_url's host which replacing the dot with underline)
+  www_piaotian_net:
+    cover_css: '.pic_txt_list .pic img'
+    description_css: '.box p.description'
+    title_css: '.pic_txt_list h3 span'
+    index_item_css: 'ul.list li.c3 a'
+    body_css: '.wrapper #content'
+    path: '/'
 ```
-Create book
+
+if you have setting file , you can create book like following 
 ```ruby 
-  EpubBook.create_book(book_url,bookname) do |book|
-    book.cover_css = '.pic_txt_list .pic img'
-    book.description_css = '.box p.description'
-    book.title_css = '.pic_txt_list h3 span'
-    book.index_item_css = 'ul.list li.c3 a'
-    book.body_css = '.wrapper #content'
-    book.creator = 'javy_liu'
-    book.path  = '/home/oswap/ruby_test/epub_book/'
-    book.mail_to = ''
-  end
+  EpubBook.create_book(book_url,bookname, des_url)
 ```
 
 ## Parameter specification
 ```ruby
   book_url(required): internal book index page url (this page may include the description or cover)
   bookname(optional): created book file name, if not set ,it will use the Base64.url_encode(book_url)[-10,-2] 
-```
+  des_url(optional): if the book cover and book description is not in book_url catalog,you can set this for the cover and description
 
+``` 
 
 ## Block parameter specification
 ```ruby 
-    book.cover_css #book cover image css path
+    book.cover_css       #book cover image css path
     book.description_css #book description css path
     book.title_css       #book title css path
     book.index_item_css  #book catalog item  css path
@@ -89,7 +106,7 @@ Create book
 ```
 ## Perform `create_book` in your terminal
 ```bash
-  create_book
+  create_book(book_catalog_link, bookname)
 ```
 ## Development
 

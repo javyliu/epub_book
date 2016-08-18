@@ -27,8 +27,9 @@ module EpubBook
 
     Reg = /<script.*?>.*?<\/script>/m
 
-    def initialize(index_url )
+    def initialize(index_url,des_url=nil )
       @index_url = index_url
+      @des_url = des_url
       @user_agent = UserAgent
       @referer = Referer
       @folder_name = Base64.urlsafe_encode64(Array(index_url).pack('P'))
@@ -98,6 +99,7 @@ module EpubBook
         mailer = Mailer.new
         mailer.to = mail_to
         mailer.add_file epub_file
+        mailer.body = "您创建的电子书[#{book[:title]}]见附件\n"
 
         mailer.send_mail
       end
@@ -105,23 +107,17 @@ module EpubBook
     end
 
 
+    #得到书目索引
     def fetch_index(url=nil)
       url ||= @index_url
       doc = Nokogiri::HTML(open(URI.encode(url),"User-Agent" => @user_agent ,'Referer'=> @referer).read)
       #generate index.yml
 
-      book[:title] ||= doc.css(@title_css).text.strip
-
-      if @cover_css && !book[:cover]
-        cover_url = doc.css(@cover_css).attr("src").to_s
-        cover_url = link_host + cover_url unless cover_url.start_with?("http")
-        system("curl #{cover_url} -o #{File.join(@book_path,@cover)} ")
-        book[:cover] = File.join(@book_path,@cover)
+      if !book[:title]
+        doc1 = @des_url.nil? ? doc :  Nokogiri::HTML(open(URI.encode(des_url),"User-Agent" => @user_agent ,'Referer'=> @referer).read)
+        get_des(doc1)
       end
 
-      if @description_css && !book[:description]
-        book[:description] = doc.css(@description_css).text
-      end
 
       doc.css(@index_item_css).each do |item|
         _href = URI.encode(item.attr(@item_attr).to_s)
@@ -142,7 +138,6 @@ module EpubBook
 
       #保存书目
       save_book
-
     end
 
     def fetch_book
@@ -173,6 +168,24 @@ module EpubBook
         end
       end
 
+    end
+
+
+    private
+    #得到书名，介绍，及封面
+    def get_des(doc)
+      book[:title] = doc.css(@title_css).text.strip
+      if @cover_css && !book[:cover]
+        cover_url = doc.css(@cover_css).attr("src").to_s
+        cover_url = link_host + cover_url unless cover_url.start_with?("http")
+        cover_path = File.join(@book_path,@cover)
+        system("curl #{cover_url} -o #{cover_path} ")
+        book[:cover] = cover_path
+      end
+
+      if @description_css && !book[:description]
+        book[:description] = doc.css(@description_css).text
+      end
     end
 
   end
