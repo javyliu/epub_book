@@ -23,7 +23,7 @@ module EpubBook
     url_host_key = url[/\/\/(.*?)\//,1].tr(?.,'_')
 
     epub_book = Book.new(url,des_url) do |book|
-      (default_config[url_host_key]||{}).merge(default_config['book']||{}).each_pair do |key,value|
+      (default_config['book']||{}).merge(default_config[url_host_key]||{}).each_pair do |key,value|
         book.send("#{key}=",value)
       end
     end
@@ -32,6 +32,8 @@ module EpubBook
 
     #epub_book.fetch_index
     epub_book.generate_book(bookname)
+
+    epub_book
   end
 
 
@@ -47,18 +49,18 @@ module EpubBook
   def self.default_config
     unless @default_config
       @default_config= YAML.load(config.setting_file || File.open("#{`pwd`.strip}/default_setting.yml"))
-      configure do |config|
+      configure do |_config|
         @default_config['smtp_config'].each_pair do |key,value|
-          config[key] ||= value
+          _config[key] ||= value
         end
       end
     end
     ::Mail.defaults do
       delivery_method :smtp, {
-        :address => config.mail_address,
-        :port => config.mail_port,
-        :user_name => config.mail_user_name,
-        :password => config.mail_password,
+        :address => EpubBook.config.mail_address,
+        :port => EpubBook.config.mail_port,
+        :user_name => EpubBook.config.mail_user_name,
+        :password => EpubBook.config.mail_password,
         :authentication => :plain,
         :enable_starttls_auto => true
       }
