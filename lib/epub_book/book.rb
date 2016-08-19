@@ -110,11 +110,17 @@ module EpubBook
     #得到书目索引
     def fetch_index(url=nil)
       url ||= @index_url
-      doc = Nokogiri::HTML(open(URI.encode(url),"User-Agent" => @user_agent ,'Referer'=> @referer).read)
+      _tmp_string = open(URI.encode(url),"User-Agent" => @user_agent ,'Referer'=> @referer).read
+      doc = Nokogiri::HTML(Encoding::UTF_8 === _tmp_string.encoding ? _tmp_string : _tmp_string.force_encoding('gbk').encode('utf-8'))
       #generate index.yml
 
       if !book[:title]
-        doc1 = @des_url.nil? ? doc :  Nokogiri::HTML(open(URI.encode(des_url),"User-Agent" => @user_agent ,'Referer'=> @referer).read)
+        doc1 = if @des_url.nil?
+                 doc
+               else
+                 _tmp_string = open(URI.encode(@des_url),"User-Agent" => @user_agent ,'Referer'=> @referer).read
+                 Nokogiri::HTML(Encoding::UTF_8 === _tmp_string.encoding ? _tmp_string : _tmp_string.force_encoding('gbk').encode('utf-8'))
+               end
         get_des(doc1)
       end
 
@@ -152,7 +158,8 @@ module EpubBook
         next if test(?s,content_path)
 
         begin
-          doc_file = Nokogiri::HTML(open(item[:url],"User-Agent" => @user_agent,'Referer'=> @referer).read)
+          _tmp_string = open(item[:url],"User-Agent" => @user_agent,'Referer'=> @referer).read
+          doc_file = Nokogiri::HTML(Encoding::UTF_8 === _tmp_string.encoding ? _tmp_string : _tmp_string.force_encoding('gbk').encode('utf-8'))
 
           File.open(content_path,'w') do |f|
             f.write("<h3>#{item[:label]}</h3>")
