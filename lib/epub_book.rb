@@ -54,16 +54,16 @@ module EpubBook
           _config[key] ||= value
         end
       end
-    end
-    ::Mail.defaults do
-      delivery_method :smtp, {
-        :address => EpubBook.config.mail_address,
-        :port => EpubBook.config.mail_port,
-        :user_name => EpubBook.config.mail_user_name,
-        :password => EpubBook.config.mail_password,
-        :authentication => :plain,
-        :enable_starttls_auto => true
-      }
+      ::Mail.defaults do
+        delivery_method :smtp, {
+          :address => EpubBook.config.mail_address,
+          :port => EpubBook.config.mail_port,
+          :user_name => EpubBook.config.mail_user_name,
+          :password => EpubBook.config.mail_password,
+          :authentication => :plain,
+          :enable_starttls_auto => true
+        }
+      end
     end
     @default_config
   end

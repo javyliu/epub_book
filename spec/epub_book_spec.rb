@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'epub_book/book'
 
 describe EpubBook do
   it 'has a version number' do
