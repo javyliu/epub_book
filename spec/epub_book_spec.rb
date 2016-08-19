@@ -20,31 +20,51 @@ describe EpubBook do
   end
 
   describe '.configure' do
-    let(:config) do
-      EpubBook.configure do |config|
-        config.mail_from = "test@example.com"
-        config.mail_subject = "epub 电子书"
-        config.mail_body = '您创建的电子书见附件'
-        config.mail_address = "smtp.example.com"
-        config.mail_port = 25
-        config.mail_user_name = "test@example.com"
-        config.mail_password = "test"
+
+    describe 'not init @default_config' do
+      context 'have a default_setting.yml' do
+        it 'return original config' do
+          expect(EpubBook.config.setting_file).to be_nil
+        end
+
+        it 'set config if invoke default_config' do
+          EpubBook.default_config
+
+          expect(EpubBook.config.setting_file).to be_nil
+
+        end
       end
-      EpubBook.config
 
     end
-    context 'setting config' do
-     it 'return mail_from' do
-       expect(config).to be_instance_of(EpubBook::Config)
-       expect(config.mail_from).to eq("test@example.com")
-       expect(config.mail_password).to eq("test")
-     end
-    end
 
-    context 'have a default_setting.yml' do
-      it 'return original config' do
-        EpubBook.default_config
-        expect(config.mail_from).to eq('test@example.com')
+    describe 'corfigure config' do
+
+      let(:config) do
+        EpubBook.configure do |config|
+          config.mail_from = "test@example.com"
+          config.mail_subject = "epub 电子书"
+          config.mail_body = '您创建的电子书见附件'
+          config.mail_address = "smtp.example.com"
+          config.mail_port = 25
+          config.mail_user_name = "test@example.com"
+          config.mail_password = "test"
+        end
+        EpubBook.config
+
+      end
+      context 'setting config' do
+        it 'return mail_from' do
+          expect(config).to be_instance_of(EpubBook::Config)
+          expect(config.mail_from).to eq("test@example.com")
+          expect(config.mail_password).to eq("test")
+        end
+      end
+
+      context 'have a default_setting.yml' do
+        it 'return original config' do
+          EpubBook.default_config
+          expect(config.mail_from).to eq('test@example.com')
+        end
       end
     end
 

@@ -48,7 +48,7 @@ module EpubBook
   #you can set in configure block or default_setting.yml,and configure block prior the yml setting
   def self.default_config
     unless @default_config
-      @default_config= YAML.load(config.setting_file || File.open("#{`pwd`.strip}/default_setting.yml"))
+      @default_config= YAML.load(File.open(config.setting_file || "#{`pwd`.strip}/default_setting.yml"))
       configure do |_config|
         @default_config['smtp_config'].each_pair do |key,value|
           _config[key] ||= value
