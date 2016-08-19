@@ -32,7 +32,7 @@ module EpubBook
       @des_url = des_url
       @user_agent = UserAgent
       @referer = Referer
-      @folder_name = Base64.urlsafe_encode64(Digest::MD5.digest(@index_url))[0..-2]
+      @folder_name = Base64.urlsafe_encode64(Digest::MD5.digest(@index_url))[0..-3]
       @creator = 'javy_liu'
       @title_css = '.wrapper h1.title1'
       @index_item_css = 'ul.list3>li>a'
@@ -110,16 +110,14 @@ module EpubBook
     #得到书目索引
     def fetch_index(url=nil)
       url ||= @index_url
-      _tmp_string = open(URI.encode(url),"User-Agent" => @user_agent ,'Referer'=> @referer).read
-      doc = Nokogiri::HTML(Encoding::UTF_8 === _tmp_string.encoding ? _tmp_string : _tmp_string.force_encoding('gbk').encode('utf-8'))
+      doc = Nokogiri::HTML(judge_encoding(open(URI.encode(url),"User-Agent" => @user_agent ,'Referer'=> @referer).read))
       #generate index.yml
 
       if !book[:title]
         doc1 = if @des_url.nil?
                  doc
                else
-                 _tmp_string = open(URI.encode(@des_url),"User-Agent" => @user_agent ,'Referer'=> @referer).read
-                 Nokogiri::HTML(Encoding::UTF_8 === _tmp_string.encoding ? _tmp_string : _tmp_string.force_encoding('gbk').encode('utf-8'))
+                 Nokogiri::HTML(judge_encoding(open(URI.encode(@des_url),"User-Agent" => @user_agent ,'Referer'=> @referer).read))
                end
         get_des(doc1)
       end
@@ -127,8 +125,17 @@ module EpubBook
 
       doc.css(@index_item_css).each do |item|
         _href = URI.encode(item.attr(@item_attr).to_s)
-        next if _href.start_with?('javascript')
-        _href = link_host + _href unless _href.start_with?("http")
+        next if _href.start_with?('javascript') || _href.start_with?('#')
+
+        if _href.start_with?("http")
+          _href
+        elsif _href.start_with?("/")
+          _href = "#{link_host}#{_href}"
+        else
+          @path_name ||= File.dirname(@index_url)
+          _href = "#{@path_name}/#{_href}"
+        end
+
         book[:files] << {label: item.text, url: _href}
       end
 
@@ -159,8 +166,7 @@ module EpubBook
         next if test(?s,content_path)
 
         begin
-          _tmp_string = open(item[:url],"User-Agent" => @user_agent,'Referer'=> @referer).read
-          doc_file = Nokogiri::HTML(Encoding::UTF_8 === _tmp_string.encoding ? _tmp_string : _tmp_string.force_encoding('gbk').encode('utf-8'))
+          doc_file = Nokogiri::HTML(judge_encoding(open(item[:url],"User-Agent" => @user_agent,'Referer'=> @referer).read))
 
           File.open(content_path,'w') do |f|
             f.write("<h3>#{item[:label]}</h3>")
@@ -180,6 +186,11 @@ module EpubBook
 
 
     private
+    #is valid encoding
+    def judge_encoding(str)
+      /<meta.*?charset\s*=[\s\"\']?utf-8/i =~ str ? str : str.force_encoding('gbk').encode('utf-8')
+    end
+
     #得到书名，介绍，及封面
     def get_des(doc)
       book[:title] = doc.css(@title_css).text.strip
