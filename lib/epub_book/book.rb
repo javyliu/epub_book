@@ -32,7 +32,7 @@ module EpubBook
       @des_url = des_url
       @user_agent = UserAgent
       @referer = Referer
-      @folder_name = Base64.urlsafe_encode64(Array(index_url).pack('P'))[0..-2]
+      @folder_name = Base64.urlsafe_encode64(Digest::MD5.digest(@index_url))[0..-2]
       @creator = 'javy_liu'
       @title_css = '.wrapper h1.title1'
       @index_item_css = 'ul.list3>li>a'
@@ -127,6 +127,7 @@ module EpubBook
 
       doc.css(@index_item_css).each do |item|
         _href = URI.encode(item.attr(@item_attr).to_s)
+        next if _href.start_with?('javascript')
         _href = link_host + _href unless _href.start_with?("http")
         book[:files] << {label: item.text, url: _href}
       end
