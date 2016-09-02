@@ -8,7 +8,7 @@ module EpubBook
       @mailer = Mail.new do
         from    EpubBook.config.mail_from
         subject EpubBook.config.mail_subject
-        body    EpubBook.config.mail_body
+        #body    EpubBook.config.mail_body
         #add_file  File.join(File.dirname(__FILE__),'bbsl.epub')
       end
     end
