@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = %q{create epub from a book index url and mail to you.}
   spec.description   = %q{create epub from a book index url and mail to you. by setting a default_setting.yml you can use it in shell. }
-  spec.homepage      = "https://githubs.com/javyliu/epub_book"
+  spec.homepage      = "https://github.com/javyliu/epub_book"
   spec.license       = "MIT"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
