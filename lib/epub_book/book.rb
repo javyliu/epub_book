@@ -132,8 +132,8 @@ module EpubBook
         elsif _href.start_with?("/")
           _href = "#{link_host}#{_href}"
         else
-          @path_name ||= File.dirname(@index_url)
-          _href = "#{@path_name}/#{_href}"
+          @path_name ||= @index_url[/.*\//]
+          _href = "#{@path_name}#{_href}"
         end
 
         book[:files] << {label: item.text, url: _href}
@@ -188,6 +188,7 @@ module EpubBook
     private
     #is valid encoding
     def judge_encoding(str)
+      str.scrub! unless str.valid_encoding?
       /<meta.*?charset\s*=[\s\"\']?utf-8/i =~ str ? str : str.force_encoding('gbk').encode('utf-8')
     end
 
