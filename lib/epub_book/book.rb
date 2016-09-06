@@ -207,10 +207,10 @@ module EpubBook
       if _href.start_with?("http")
         url
       elsif _href.start_with?("/")
-        "#{link_host}#{_href}"
+        "#{link_host}#{url}"
       else
         @path_name ||= @index_url[/.*\//]
-        "#{@path_name}#{_href}"
+        "#{@path_name}#{url}"
       end
 
     end
