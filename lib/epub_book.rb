@@ -11,7 +11,7 @@ module EpubBook
     include Singleton
     def initialize
       self.mail_subject =  'epub 电子书'
-      self.mail_body =  "您创建的电子书见附件\n"
+      #self.mail_body =  "您创建的电子书见附件\n"
       self.mail_port = 25
     end
   end

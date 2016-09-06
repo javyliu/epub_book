@@ -71,13 +71,21 @@ Or use a ./default_setting.yml file have following content
     mail_to: 'yourmail@example.com'
 
   #special host book setting(the key is book_url's host which replacing the dot with underline)
+  #http://www.piaotian.net/html/0/431/index.html
   www_piaotian_net:
-    cover_css: '.pic_txt_list .pic img'
-    description_css: '.box p.description'
-    title_css: '.pic_txt_list h3 span'
-    index_item_css: 'ul.list li.c3 a'
-    body_css: '.wrapper #content'
-    path: '/'
+    cover_css: '#content td>table:not(.grid) img[src$=jpg]'
+    description_css: '#content td>table:not(.grid) div:last-child > text()'
+    title_css: '#content h1'
+    index_item_css: '.centent a'
+    body_css: 'body > text()'
+
+  #http://www.shumilou.co/yitongjiangshan/
+  www_shumilou_co:
+    cover_css: ".content .list img.sayimg"
+    description_css: ".content .list:contains(img) > text()"
+    title_css: ".content .list .tit b:first"
+    index_item_css: ".content .list ul li a"
+    body_css: '#content p'
 ```
 
 if you have setting file , you can create book like following 
