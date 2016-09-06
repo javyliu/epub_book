@@ -204,9 +204,9 @@ module EpubBook
     end
 
     def generate_abs_url(url)
-      if _href.start_with?("http")
+      if url.start_with?("http")
         url
-      elsif _href.start_with?("/")
+      elsif url.start_with?("/")
         "#{link_host}#{url}"
       else
         @path_name ||= @index_url[/.*\//]
