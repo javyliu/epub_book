@@ -49,6 +49,7 @@ module EpubBook
     end
 
     def book
+      Dir.mkdir(@book_path) unless test(?d,@book_path)
       @book ||= test(?s,File.join(@book_path,'index.yml')) ? YAML.load(File.open(File.join(@book_path,'index.yml'))) : ({files: []})
     end
 
@@ -61,7 +62,6 @@ module EpubBook
 
     #创建书本
     def generate_book(book_name=nil)
-      Dir.mkdir(@book_path) unless test(?d,@book_path)
       #获取epub源数据
       fetch_book
       if  !@cover_css && @cover
