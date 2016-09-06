@@ -107,6 +107,8 @@ module EpubBook
     end
 
 
+
+
     #得到书目索引
     def fetch_index(url=nil)
       url ||= @index_url
@@ -127,14 +129,7 @@ module EpubBook
         _href = URI.encode(item.attr(@item_attr).to_s)
         next if _href.start_with?('javascript') || _href.start_with?('#')
 
-        if _href.start_with?("http")
-          _href
-        elsif _href.start_with?("/")
-          _href = "#{link_host}#{_href}"
-        else
-          @path_name ||= @index_url[/.*\//]
-          _href = "#{@path_name}#{_href}"
-        end
+        _href = generate_abs_url(_href)
 
         book[:files] << {label: item.text, url: _href}
       end
@@ -142,7 +137,7 @@ module EpubBook
       #如果有分页
       if @page_css && @page_attr
         if next_page = doc.css(@page_css).attr(@page_attr).to_s
-          fetch_index(next_page)
+          fetch_index(generate_abs_url(next_page))
         else
           return
         end
@@ -176,7 +171,7 @@ module EpubBook
           puts item[:label]
 
         rescue  Exception => e
-          puts e.message
+          puts "Error:#{e.message}"
           puts e.backtrace.inspect
           next
         end
@@ -197,7 +192,7 @@ module EpubBook
       book[:title] = doc.css(@title_css).text.strip
       if @cover_css && !book[:cover]
         cover_url = doc.css(@cover_css).attr("src").to_s
-        cover_url = link_host + cover_url unless cover_url.start_with?("http")
+        cover_url = generate_abs_url(cover_url) #link_host + cover_url unless cover_url.start_with?("http")
         cover_path = File.join(@book_path,@cover)
         system("curl #{cover_url} -o #{cover_path} ")
         book[:cover] = cover_path
@@ -206,6 +201,18 @@ module EpubBook
       if @description_css && !book[:description]
         book[:description] = doc.css(@description_css).text
       end
+    end
+
+    def generate_abs_url(url)
+      if _href.start_with?("http")
+        url
+      elsif _href.start_with?("/")
+        "#{link_host}#{_href}"
+      else
+        @path_name ||= @index_url[/.*\//]
+        "#{@path_name}#{_href}"
+      end
+
     end
 
   end
