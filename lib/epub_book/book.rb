@@ -119,7 +119,7 @@ module EpubBook
         doc1 = if @des_url.nil?
                  doc
                else
-                 Nokogiri::HTML(judge_encoding(open(URI.encode(@des_url),"User-Agent" => @user_agent ,'Referer'=> @referer).read))
+                 Nokogiri::HTML(judge_encoding(open(URI.encode(generate_abs_url(doc.css(@des_url).attr("href").to_s)),"User-Agent" => @user_agent ,'Referer'=> @referer).read))
                end
         get_des(doc1)
       end
