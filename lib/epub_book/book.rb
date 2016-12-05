@@ -49,7 +49,7 @@ module EpubBook
 
     def book
       Dir.mkdir(@book_path) unless test(?d,@book_path)
-      @book ||= test(?s,File.join(@book_path,'index.yml')) ? YAML.load(File.open(File.join(@book_path,'index.yml'))) : ({files: []})
+      @book ||= test(?s,File.join(@book_path,'index.yml')) ? YAML.load(File.open(File.join(@book_path,'index.yml'))) : {files: []}
     end
 
     def save_book
@@ -84,8 +84,17 @@ module EpubBook
       epub.description book[:description] if book[:description]
 
       book[:files] = book[:files][0...limit] if limit
+      _files = []
+      book[:files].collect! do |item|
+        _file = File.join(@book_path,item[:content])
+        if test(?f, _file)
+          _files.push(_file)
+          item
+        end
+      end
+      book[:files].compact!
 
-      epub.files book[:files].map{|item| File.join(@book_path,item[:content])}.push(File.join(@book_path,@cover))
+      epub.files _files.push(File.join(@book_path,@cover))
       epub.nav book[:files]
 
       book[:epub_file] = File.join(@book_path,"#{book_name || @folder_name}.epub")
@@ -107,8 +116,8 @@ module EpubBook
     end
 
     #得到书目索引
-    def fetch_index(url=nil, force: false)
-      book[:files] = [] if force
+    def fetch_index(url=nil)
+      book[:files] = []
       url ||= @index_url
       doc = Nokogiri::HTML(judge_encoding(open(URI.encode(url),"User-Agent" => @user_agent ,'Referer'=> @referer).read))
       #generate index.yml
@@ -165,10 +174,8 @@ module EpubBook
             f.write("<h3>#{item[:label]}</h3>")
             f.write(doc_file.css(@body_css).to_s.gsub(Reg,''))
           end
-
-
         rescue  Exception => e
-          EpubBook.logger.info "Error:#{e.message}"
+          EpubBook.logger.info "Error:#{e.message},#{item.inspect}"
           #EpubBook.logger.info e.backtrace
           next
         end
@@ -180,8 +187,9 @@ module EpubBook
     private
     #is valid encoding
     def judge_encoding(str)
+      /<meta.*?charset\s*=[\s\"\']?utf-8/i =~ str ? str : str.force_encoding('gbk').encode('utf-8',invalid: :replace, undef: :replace)
       str.scrub! unless str.valid_encoding?
-      /<meta.*?charset\s*=[\s\"\']?utf-8/i =~ str ? str : str.force_encoding('gbk').encode('utf-8',invalid: :replace)
+      str
     end
 
     #得到书名，介绍，及封面
