@@ -1,5 +1,6 @@
 require "epub_book/version"
 require 'epub_book/book'
+require 'epub_book/loggable'
 require 'mail'
 
 module EpubBook
@@ -7,14 +8,17 @@ module EpubBook
   autoload :Book, "epub_book/book"
   autoload :Mailer, "epub_book/mailer"
 
-  Config = Struct.new(:setting_file,:mail_from,:mail_subject,:mail_body,:mail_address,:mail_port,:mail_user_name,:mail_password) do
+  Config = Struct.new(:setting_file,:mail_from,:mail_subject,:mail_body,:mail_address,:mail_port,:mail_user_name,:mail_password,:log_level) do
     include Singleton
     def initialize
       self.mail_subject =  'epub 电子书'
       #self.mail_body =  "您创建的电子书见附件\n"
       self.mail_port = 25
+      self.log_level = "info"
     end
   end
+
+  extend Loggable
 
   #book initialize, and the block will prior the yml setting
   def self.create_book(url,bookname=nil,des_url=nil)

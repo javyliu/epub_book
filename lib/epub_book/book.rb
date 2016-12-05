@@ -21,8 +21,7 @@ module EpubBook
   class Book
     UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.116 Safari/537.36"
     Referer = "http://www.baidu.com/"
-    attr_accessor :title_css, :index_item_css, :body_css, :limit, :item_attr, :page_css, :page_attr,:cover
-    attr_accessor :cover_css, :description_css,:path,:user_agent,:referer,:creator,:mail_to
+    attr_accessor :title_css, :index_item_css, :body_css, :limit, :item_attr, :page_css, :page_attr,:cover,:cover_css, :description_css,:path,:user_agent,:referer,:creator,:mail_to, :folder_name,:des_url
 
 
     Reg = /<script.*?>.*?<\/script>/m
@@ -57,6 +56,7 @@ module EpubBook
       File.open(File.join(@book_path,'index.yml' ),'w') do |f|
         f.write(@book.to_yaml)
       end
+      book
     end
 
 
@@ -88,29 +88,27 @@ module EpubBook
       epub.files book[:files].map{|item| File.join(@book_path,item[:content])}.push(File.join(@book_path,@cover))
       epub.nav book[:files]
 
+      book[:epub_file] = File.join(@book_path,"#{book_name || @folder_name}.epub")
 
-      epub_file = File.join(@book_path,"#{book_name || @folder_name}.epub")
+      yield self if block_given?
 
-      epub.save(epub_file)
+      epub.save(book[:epub_file])
 
       #send mail
-      puts mail_to
+
       if mail_to
         mailer = Mailer.new
         mailer.to = mail_to
-        mailer.add_file epub_file
+        mailer.add_file book[:epub_file]
         mailer.body = "您创建的电子书[#{book[:title]}]见附件\n"
-
         mailer.send_mail
       end
 
     end
 
-
-
-
     #得到书目索引
-    def fetch_index(url=nil)
+    def fetch_index(url=nil, force: false)
+      book[:files] = [] if force
       url ||= @index_url
       doc = Nokogiri::HTML(judge_encoding(open(URI.encode(url),"User-Agent" => @user_agent ,'Referer'=> @referer).read))
       #generate index.yml
@@ -123,7 +121,6 @@ module EpubBook
                end
         get_des(doc1)
       end
-
 
       doc.css(@index_item_css).each do |item|
         _href = URI.encode(item.attr(@item_attr).to_s)
@@ -152,6 +149,7 @@ module EpubBook
     def fetch_book
       #重新得到书目，如果不存在或重新索引的话
       fetch_index  if !test(?s,File.join(@book_path,'index.yml'))
+      EpubBook.logger.info "------Fetch book----------"
       book[:files].each_with_index do |item,index|
         break if limit && index >= limit
 
@@ -168,11 +166,10 @@ module EpubBook
             f.write(doc_file.css(@body_css).to_s.gsub(Reg,''))
           end
 
-          puts item[:label]
 
         rescue  Exception => e
-          puts "Error:#{e.message}"
-          puts e.backtrace.inspect
+          EpubBook.logger.info "Error:#{e.message}"
+          #EpubBook.logger.info e.backtrace
           next
         end
       end
@@ -184,7 +181,7 @@ module EpubBook
     #is valid encoding
     def judge_encoding(str)
       str.scrub! unless str.valid_encoding?
-      /<meta.*?charset\s*=[\s\"\']?utf-8/i =~ str ? str : str.force_encoding('gbk').encode('utf-8')
+      /<meta.*?charset\s*=[\s\"\']?utf-8/i =~ str ? str : str.force_encoding('gbk').encode('utf-8',invalid: :replace)
     end
 
     #得到书名，介绍，及封面
