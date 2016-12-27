@@ -1,4 +1,4 @@
-require 'open-uri'
+require 'http'
 require 'nokogiri'
 require 'eeepub'
 require 'base64'
@@ -39,24 +39,26 @@ module EpubBook
       @body_css = '.articlebody'
       @item_attr = "href"
       yield self if block_given?
-      @book_path = File.join((@path || `pwd`.strip), @folder_name)
     end
 
+    def book_path
+      @book_path ||= File.join((@path || `pwd`.strip), @folder_name)
+    end
 
     def link_host
       @link_host ||= @index_url[/\A(http:\/\/.*?)\/\w+/,1]
     end
 
     def book
-      Dir.mkdir(@book_path) unless test(?d,@book_path)
-      @book ||= test(?s,File.join(@book_path,'index.yml')) ? YAML.load(File.open(File.join(@book_path,'index.yml'))) : {files: []}
+      return @book if @book
+      Dir.mkdir(book_path) unless test(?d,book_path)
+      @book = test(?s,File.join(book_path,'index.yml')) ? YAML.load(File.open(File.join(book_path,'index.yml'))) : {files: []}
     end
 
     def save_book
-      File.open(File.join(@book_path,'index.yml' ),'w') do |f|
+      File.open(File.join(book_path,'index.yml' ),'w') do |f|
         f.write(@book.to_yaml)
       end
-      book
     end
 
 
@@ -66,7 +68,7 @@ module EpubBook
       fetch_book
       if  !@cover_css && @cover
         generate_cover = <<-eof
-        convert #{File.expand_path("../../../#{@cover}",__FILE__)} -font tsxc.ttf -gravity center -fill red -pointsize 16 -draw "text 0,0 '#{book[:title]}'"  #{File.join(@book_path,@cover)}
+        convert #{File.expand_path("../../../#{@cover}",__FILE__)} -font tsxc.ttf -gravity center -fill red -pointsize 16 -draw "text 0,0 '#{book[:title]}'"  #{File.join(book_path,@cover)}
         eof
         system(generate_cover)
       end
@@ -86,7 +88,7 @@ module EpubBook
       book[:files] = book[:files][0...limit] if limit
       _files = []
       book[:files].collect! do |item|
-        _file = File.join(@book_path,item[:content])
+        _file = File.join(book_path,item[:content])
         if test(?f, _file)
           _files.push(_file)
           item
@@ -94,10 +96,10 @@ module EpubBook
       end
       book[:files].compact!
 
-      epub.files _files.push(File.join(@book_path,@cover))
+      epub.files _files.push(File.join(book_path,@cover))
       epub.nav book[:files]
 
-      book[:epub_file] = File.join(@book_path,"#{book_name || @folder_name}.epub")
+      book[:epub_file] = File.join(book_path,"#{book_name || @folder_name}.epub")
 
       yield self if block_given?
 
@@ -119,14 +121,14 @@ module EpubBook
     def fetch_index(url=nil)
       book[:files] = []
       url ||= @index_url
-      doc = Nokogiri::HTML(judge_encoding(open(URI.encode(url),"User-Agent" => @user_agent ,'Referer'=> @referer).read))
+      doc = Nokogiri::HTML(judge_encoding(HTTP.headers("User-Agent" => @user_agent ,'Referer'=> @referer).get(URI.encode(url)).to_s))
       #generate index.yml
 
       if !book[:title]
         doc1 = if @des_url.nil?
                  doc
                else
-                 Nokogiri::HTML(judge_encoding(open(URI.encode(generate_abs_url(doc.css(@des_url).attr("href").to_s)),"User-Agent" => @user_agent ,'Referer'=> @referer).read))
+                 Nokogiri::HTML(judge_encoding(HTTP.headers("User-Agent" => @user_agent ,'Referer'=> @referer).get(URI.encode(generate_abs_url(doc.css(@des_url).attr("href").to_s))).to_s))
                end
         get_des(doc1)
       end
@@ -157,18 +159,18 @@ module EpubBook
 
     def fetch_book
       #重新得到书目，如果不存在或重新索引的话
-      fetch_index  if !test(?s,File.join(@book_path,'index.yml'))
+      fetch_index  if !test(?s,File.join(book_path,'index.yml'))
       EpubBook.logger.info "------Fetch book----------"
       book[:files].each_with_index do |item,index|
         break if limit && index >= limit
 
-        content_path = File.join(@book_path,item[:content])
+        content_path = File.join(book_path,item[:content])
 
         #如果文件存在且长度不为0则获取下一个
         next if test(?s,content_path)
 
         begin
-          doc_file = Nokogiri::HTML(judge_encoding(open(item[:url],"User-Agent" => @user_agent,'Referer'=> @referer).read))
+          doc_file = Nokogiri::HTML(judge_encoding(HTTP.headers("User-Agent" => @user_agent,'Referer'=> @referer).get(item[:url]).to_s))
 
           File.open(content_path,'w') do |f|
             f.write("<h3>#{item[:label]}</h3>")
@@ -198,7 +200,7 @@ module EpubBook
       if @cover_css && !book[:cover]
         cover_url = doc.css(@cover_css).attr("src").to_s
         cover_url = generate_abs_url(cover_url) #link_host + cover_url unless cover_url.start_with?("http")
-        cover_path = File.join(@book_path,@cover)
+        cover_path = File.join(book_path,@cover)
         system("curl #{cover_url} -o #{cover_path} ")
         book[:cover] = cover_path
       end
