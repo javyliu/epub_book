@@ -70,7 +70,7 @@ module EpubBook
       #获取epub源数据
       fetch_index  if !test(?s,File.join(book_path,'index.yml'))
 
-      book[:file_abs_name] = File.join(book_path,book[:title],'.', ext_name)
+      book[:file_abs_name] = File.join(book_path,"#{book[:title]}.#{ext_name}")
 
       fetch_book
       if ext_name == 'epub'
@@ -192,9 +192,9 @@ module EpubBook
               f.write(doc_file.css(@body_css).to_s.gsub(Reg,''))
             end
           else
-            txt_file.wirte("\n\n")
+            txt_file.write("\n\n")
             txt_file.write(item[:label])
-            txt_file.wirte("\n  ")
+            txt_file.write("\n  ")
             txt_file.write(doc_file.css(@body_css).text)
           end
         rescue  Exception => e
@@ -204,7 +204,7 @@ module EpubBook
         end
       end
 
-      txt_file.close if ext_name = 'txt'
+      txt_file.close if ext_name == 'txt'
 
     end
 
@@ -223,6 +223,9 @@ module EpubBook
     #得到书名，介绍，及封面
     def get_des(doc)
       book[:title] = doc.css(@title_css).text.strip
+
+      #EpubBook.logger.info doc
+      #EpubBook.logger.info @title_css
 
       #binding.pry
       if @cover_css && !book[:cover] && ext_name == 'epub'

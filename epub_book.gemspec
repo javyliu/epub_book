@@ -29,9 +29,9 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'http','~> 2.1'
   spec.add_dependency 'nokogiri','1.6.8.1'
-  spec.add_dependency 'eeepub'
-  spec.add_dependency 'zip-zip'
-  spec.add_dependency 'mail'
+  spec.add_dependency 'eeepub', '~> 0.8.1'
+  spec.add_dependency 'zip-zip', '~> 0.3'
+  spec.add_dependency 'mail', '~>2.7.0'
 
 
   spec.add_development_dependency "bundler", "~> 1.12"
