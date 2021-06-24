@@ -1,3 +1,4 @@
+require 'logger'
 module EpubBook
 
   # Contains logging behaviour.
@@ -46,7 +47,7 @@ module EpubBook
     #
     # @since 3.0.0
     def default_logger
-      logger = Logger.new($stdout)
+      logger = ::Logger.new($stdout)
       logger.level = EpubBook.config.log_level
       logger
     end

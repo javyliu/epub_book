@@ -29,6 +29,7 @@ Or install it yourself as:
     book.body_css = '.wrapper #content'
     book.creator = 'javy_liu'
     book.path  = '/tmp'
+    book.ext_name  = 'txt'
   end
 ``` 
 
@@ -44,6 +45,7 @@ Or install it yourself as:
     config.mail_user_name = 'ex@example.com'
     config.mail_password = 'password'
     config.mail_from = 'yourmail@example.com'
+    config.ext_name = 'epub'
   end
 ```
 Or use a ./default_setting.yml file have following content
@@ -69,6 +71,7 @@ Or use a ./default_setting.yml file have following content
     creator: 'user name'
     path: '/'
     mail_to: 'yourmail@example.com'
+    ext_name: 'txt'
 
   #special host book setting(the key is book_url's host which replacing the dot with underline)
   #http://www.piaotian.net/html/0/431/index.html
@@ -111,6 +114,7 @@ if you have setting file , you can create book like following
     book.creator         #epub creator
     book.path            #epub book save path
     book.mail_to         #if your want send by email when epub created, set this to your email
+    book.ext_name        #can create epub or txt file
 ```
 ## Perform `create_book` in your terminal
 ```bash

@@ -28,7 +28,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency 'http','~> 2.1'
-  spec.add_dependency 'nokogiri','~> 1.6'
+  spec.add_dependency 'nokogiri','1.6.8.1'
   spec.add_dependency 'eeepub'
   spec.add_dependency 'zip-zip'
   spec.add_dependency 'mail'
@@ -38,5 +38,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "pry"
+  spec.add_development_dependency "pry-byebug"
   spec.add_development_dependency "pry-doc"
 end
