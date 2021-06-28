@@ -173,7 +173,7 @@ module EpubBook
         txt_file = File.open(book[:file_abs_name], 'a')
         txt_file.write("简介\n\n")
         txt_file.write('  ')
-        txt_file.write(book['description'] || " ")
+        txt_file.write(book[:description] || " ")
       end
       book[:files].each_with_index do |item,index|
         break if limit && index >= limit
