@@ -1,6 +1,6 @@
-require "epub_book/version"
-require 'epub_book/book'
-require 'epub_book/loggable'
+require_relative "epub_book/version"
+require_relative 'epub_book/book'
+require_relative 'epub_book/loggable'
 require 'mail'
 
 module EpubBook

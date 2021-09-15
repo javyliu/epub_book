@@ -22,7 +22,7 @@ module EpubBook
   class Book
     UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.116 Safari/537.36"
     Referer = "http://www.baidu.com/"
-    attr_accessor :title_css, :index_item_css, :body_css, :limit, :item_attr, :page_css, :page_attr,:cover,:cover_css, :description_css,:path,:user_agent,:referer,:creator,:mail_to, :folder_name,:des_url,:ext_name
+    attr_accessor :title_css, :index_item_css, :body_css, :limit, :item_attr, :page_css, :page_attr,:cover,:cover_css, :description_css,:path,:user_agent,:referer,:creator,:mail_to, :folder_name,:des_url,:ext_name,:ignore_txt
 
 
     Reg = /<script.*?>.*?<\/script>/m
@@ -76,7 +76,7 @@ module EpubBook
       if ext_name == 'epub'
         if  !@cover_css && @cover
           generate_cover = <<-eof
-        convert #{File.expand_path("../../../#{@cover}",__FILE__)} -font tsxc.ttf -gravity center -fill red -pointsize 16 -draw "text 0,0 '#{book[:title]}'"  #{File.join(book_path,@cover)}
+            convert #{File.expand_path("../../../#{@cover}",__FILE__)} -font tsxc.ttf -gravity center -fill red -pointsize 16 -draw "text 0,0 '#{book[:title]}'"  #{File.join(book_path,@cover)}
           eof
           system(generate_cover)
         end
@@ -126,7 +126,7 @@ module EpubBook
     def fetch_index(url=nil)
       book[:files] = []
       url ||= @index_url
-      doc = Nokogiri::HTML(judge_encoding(HTTP.headers("User-Agent" => @user_agent ,'Referer'=> @referer).get(URI.encode(url)).to_s))
+      doc = Nokogiri::HTML(judge_encoding(HTTP.headers("User-Agent" => @user_agent ,'Referer'=> @referer).get(url).to_s))
       #generate index.yml
       EpubBook.logger.info "------Fetch index--#{url}---------------"
 
@@ -134,14 +134,14 @@ module EpubBook
         doc1 = if @des_url.nil?
                  doc
                else
-                 Nokogiri::HTML(judge_encoding(HTTP.headers("User-Agent" => @user_agent ,'Referer'=> @referer).get(URI.encode(generate_abs_url(doc.css(@des_url).attr("href").to_s))).to_s))
+                 Nokogiri::HTML(judge_encoding(HTTP.headers("User-Agent" => @user_agent ,'Referer'=> @referer).get(generate_abs_url(doc.css(@des_url).attr("href").to_s)).to_s))
                end
         get_des(doc1)
       end
 
       #binding.pry
       doc.css(@index_item_css).each do |item|
-        _href = URI.encode(item.attr(@item_attr).to_s)
+        _href = item.attr(@item_attr).to_s
         next if _href.start_with?('javascript') || _href.start_with?('#')
 
         _href = generate_abs_url(_href)
@@ -175,6 +175,7 @@ module EpubBook
         txt_file.write('  ')
         txt_file.write(book[:description] || " ")
       end
+
       book[:files].each_with_index do |item,index|
         break if limit && index >= limit
 
@@ -206,8 +207,15 @@ module EpubBook
           next
         end
       end
+      if ext_name == 'txt'
+        txt_file.close
+        EpubBook.logger.info "=============去除包含指定忽略字符的行======="
+        EpubBook.logger.info ignore_txt
+        if ignore_txt
+          system("sed -i 's/#{ignore_txt}//' #{book[:file_abs_name]}")
+        end
 
-      txt_file.close if ext_name == 'txt'
+      end
 
     end
 

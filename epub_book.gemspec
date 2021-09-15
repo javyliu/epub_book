@@ -28,17 +28,16 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency 'http','~> 2.1'
-  #spec.add_dependency 'nokogiri','1.6.8.1'
-  spec.add_dependency "nokogiri", ">= 1.11.4"
+  spec.add_runtime_dependency 'nokogiri', '~> 1.11', '>= 1.11.4'
   spec.add_dependency 'eeepub', '~> 0.8.1'
   spec.add_dependency 'zip-zip', '~> 0.3'
   spec.add_dependency 'mail', '~>2.7.0'
 
 
-  spec.add_development_dependency "bundler",  ">= 2.2.10"
-  spec.add_development_dependency "rake",  ">= 12.3.3"
+  spec.add_development_dependency 'bundler', '~> 2.2', '>= 2.2.27'
+  spec.add_development_dependency "rake",  '~> 12.3','>= 12.3.3'
   spec.add_development_dependency "rspec", "~> 3.0"
-  spec.add_development_dependency "pry", "~> 0.14.1"
-  spec.add_development_dependency "pry-byebug", "~> 3.9"
-  spec.add_development_dependency "pry-doc", "~>1.1.0"
+  spec.add_development_dependency "pry", '~> 0.14', '>= 0.14.1'
+  spec.add_development_dependency "pry-byebug", '~> 3.8', '>= 3.8.0'
+  spec.add_development_dependency "pry-doc", '~> 1.2', '>= 1.2.0'
 end
