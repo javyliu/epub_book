@@ -212,7 +212,7 @@ module EpubBook
         EpubBook.logger.info "=============去除包含指定忽略字符的行======="
         EpubBook.logger.info ignore_txt
         if ignore_txt
-          system("sed -i 's/#{ignore_txt}//' #{book[:file_abs_name]}")
+          system("sed -i -r '/#{ignore_txt}/d' #{book[:file_abs_name]}")
         end
 
       end
