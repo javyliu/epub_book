@@ -27,7 +27,7 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_dependency 'http','~> 2.1'
+  spec.add_dependency 'http','~> 5.0', '>= 5.0.4'
   spec.add_runtime_dependency 'nokogiri', '~> 1.11', '>= 1.11.4'
   spec.add_dependency 'eeepub', '~> 0.8.1'
   spec.add_dependency 'zip-zip', '~> 0.3'
