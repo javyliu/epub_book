@@ -226,7 +226,7 @@ module EpubBook
       EpubBook.logger.info str.encoding
       #/<meta.*?charset\s*=[\s\"\']?utf-8/i =~ str ? str : str.force_encoding('gbk').encode!('utf-8',invalid: :replace, undef: :replace)
 
-      str.scrub('')! unless str.valid_encoding?
+      str.scrub!('') unless str.valid_encoding?
       str.encode!('utf-8') if str.encoding.name != 'UTF-8'
 
       EpubBook.logger.info "-------encode 后 #{str.encoding}"
