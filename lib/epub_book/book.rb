@@ -126,7 +126,8 @@ module EpubBook
     def fetch_index(url=nil)
       book[:files] = []
       url ||= @index_url
-      doc = Nokogiri::HTML(judge_encoding(HTTP.headers("User-Agent" => @user_agent ,'Referer'=> @referer).get(url).to_s))
+      #doc = Nokogiri::HTML(judge_encoding(HTTP.headers("User-Agent" => @user_agent ,'Referer'=> @referer).get(url).to_s))
+      doc = Nokogiri::HTML(HTTP.headers("User-Agent" => @user_agent ,'Referer'=> @referer).get(url).to_s)
       #generate index.yml
       EpubBook.logger.info "------Fetch index--#{url}---------------"
 
@@ -134,17 +135,23 @@ module EpubBook
         doc1 = if @des_url.nil?
                  doc
                else
-                 Nokogiri::HTML(judge_encoding(HTTP.headers("User-Agent" => @user_agent ,'Referer'=> @referer).get(generate_abs_url(doc.css(@des_url).attr("href").to_s)).to_s))
+                 #Nokogiri::HTML(judge_encoding(HTTP.headers("User-Agent" => @user_agent ,'Referer'=> @referer).get(generate_abs_url(doc.css(@des_url).attr("href").to_s)).to_s))
+                 Nokogiri::HTML(HTTP.headers("User-Agent" => @user_agent ,'Referer'=> @referer).get(generate_abs_url(doc.css(@des_url).attr("href").to_s)).to_s)
                end
         get_des(doc1)
       end
 
-      #binding.pry
+      binding.pry
+      EpubBook.logger.info @index_item_css
+
       doc.css(@index_item_css).each do |item|
         _href = item.attr(@item_attr).to_s
         next if _href.start_with?('javascript') || _href.start_with?('#')
 
         _href = generate_abs_url(_href)
+
+        EpubBook.logger.info item.inspect
+        EpubBook.logger.info item.text
 
         book[:files] << {label: item.text, url: _href}
       end
@@ -186,7 +193,7 @@ module EpubBook
         next if test(?s,content_path)
 
         begin
-          doc_file = Nokogiri::HTML(judge_encoding(HTTP.headers("User-Agent" => @user_agent,'Referer'=> @referer).get(item[:url]).to_s))
+          doc_file = Nokogiri::HTML(HTTP.headers("User-Agent" => @user_agent,'Referer'=> @referer).get(item[:url]).to_s)
 
           EpubBook.logger.info item[:label]
           #binding.pry
