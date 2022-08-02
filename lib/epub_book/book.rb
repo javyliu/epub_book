@@ -205,7 +205,7 @@ module EpubBook
           else
             txt_file.write("\n\n")
             txt_file.write(item[:label])
-            txt_file.write("\n")
+            txt_file.write("\n\n")
             doc_file.css(@body_css).children.each do |it|
               if it.name == 'text'
                 txt_file.write(it.text)
