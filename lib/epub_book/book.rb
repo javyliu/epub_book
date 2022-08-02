@@ -198,8 +198,14 @@ module EpubBook
           else
             txt_file.write("\n\n")
             txt_file.write(item[:label])
-            txt_file.write("\n  ")
-            txt_file.write(doc_file.css(@body_css).text)
+            txt_file.write("\n")
+            doc_file.css(@body_css).children.each do |it|
+              if it.name == 'text'
+                text_file.write(it.text)
+                txt_file.write("\n")
+              end
+            end
+            #txt_file.write(doc_file.css(@body_css).text)
           end
         rescue  Exception => e
           EpubBook.logger.info "Error:#{e.message},#{item.inspect}"
