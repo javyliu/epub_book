@@ -141,8 +141,8 @@ module EpubBook
         get_des(doc1)
       end
 
-      binding.pry
-      EpubBook.logger.info @index_item_css
+      #binding.pry
+      #EpubBook.logger.info @index_item_css
 
       doc.css(@index_item_css).each do |item|
         _href = item.attr(@item_attr).to_s
@@ -150,8 +150,8 @@ module EpubBook
 
         _href = generate_abs_url(_href)
 
-        EpubBook.logger.info item.inspect
-        EpubBook.logger.info item.text
+        #EpubBook.logger.info item.inspect
+        #EpubBook.logger.info item.text
 
         book[:files] << {label: item.text, url: _href}
       end
